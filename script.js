@@ -1,59 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
+    // Mobile menu toggle is now handled in header.js
     
-    if (hamburger) {
-        hamburger.addEventListener('click', function() {
-            this.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-    }
-
-    // Add active class styles for mobile menu
-    const style = document.createElement('style');
-    style.textContent = `
-        .nav-links.active {
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: white;
-            padding: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-        }
-        
-        .nav-links.active li {
-            margin: 0.75rem 0;
-        }
-        
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-        
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-        
-        .hamburger span {
-            transition: all 0.3s ease;
-        }
-    `;
-    document.head.appendChild(style);
-
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
             // Close mobile menu if open
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
             if (hamburger && hamburger.classList.contains('active')) {
                 hamburger.classList.remove('active');
                 navLinks.classList.remove('active');
@@ -75,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Waitlist form
+    // Form submission for waitlist
     const waitlistForm = document.getElementById('waitlist-form');
     const formSuccess = document.getElementById('form-success');
     const formError = document.getElementById('form-error');
@@ -110,59 +65,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Show loading state
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.textContent;
-            submitButton.textContent = 'Submitting...';
-            submitButton.disabled = true;
+            // Form is valid, show success message
+            waitlistForm.classList.add('hidden');
+            formSuccess.classList.remove('hidden');
             
-            // Collect form data
+            // You would typically send the form data to your server here
             const formData = new FormData(this);
-            const data = {};
-            
+            const formObject = {};
             formData.forEach((value, key) => {
                 if (key === 'frameworks') {
-                    if (!data[key]) {
-                        data[key] = [];
+                    if (!formObject[key]) {
+                        formObject[key] = [];
                     }
-                    data[key].push(value);
+                    formObject[key].push(value);
                 } else {
-                    data[key] = value;
+                    formObject[key] = value;
                 }
             });
             
-            // Simulate API call (replace with actual API call)
-            setTimeout(() => {
-                try {
-                    // Simulate successful submission
-                    console.log('Form data:', data);
-                    
-                    // Hide form and show success message
-                    waitlistForm.classList.add('hidden');
-                    formSuccess.classList.remove('hidden');
-                    
-                    // Scroll to success message
-                    const headerOffset = 100;
-                    const elementPosition = formSuccess.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    formError.classList.remove('hidden');
-                    
-                    // Reset button
-                    submitButton.textContent = originalButtonText;
-                    submitButton.disabled = false;
-                }
-            }, 1500);
+            console.log('Form data:', formObject);
+            
+            // Example AJAX request (commented out)
+            /*
+            fetch('/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                waitlistForm.classList.remove('hidden');
+                formSuccess.classList.add('hidden');
+                formError.classList.remove('hidden');
+            });
+            */
         });
         
-        // Input validation on blur
-        waitlistForm.querySelectorAll('input, select').forEach(input => {
+        // Add input validation on blur
+        const inputs = waitlistForm.querySelectorAll('input[required], select[required]');
+        inputs.forEach(input => {
             input.addEventListener('blur', function() {
                 validateInput(this);
             });
