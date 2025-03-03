@@ -113,7 +113,7 @@ const server = http.createServer(async (req, res) => {
 
   // Handle contact link (mailto:)
   if (req.url === '/contact') {
-    res.writeHead(302, { 'Location': 'mailto:hello@eniayomi.com' });
+    res.writeHead(302, { 'Location': 'mailto:hello@compecho.com' });
     res.end();
     return;
   }

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <li><a href="${currentPath === '/' ? '#features' : '/#features'}" ${currentPath === '/features' ? 'class="active"' : ''}>Features</a></li>
                 <li><a href="${currentPath === '/' ? '#how-it-works' : '/#how-it-works'}" ${currentPath === '/how-it-works' ? 'class="active"' : ''}>How It Works</a></li>
                 <li><a href="/pricing" ${currentPath === '/pricing' ? 'class="active"' : ''}>Pricing</a></li>
-                <li><a href="mailto:hello@eniayomi.com">Contact</a></li>
+                <li><a href="mailto:hello@compecho.com">Contact</a></li>
                 <li><a href="${currentPath === '/' ? '#waitlist' : '/#waitlist'}" class="btn btn-primary" style="color: white;">Join Waitlist</a></li>
             </ul>
             <div class="hamburger">

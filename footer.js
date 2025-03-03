@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>Company</h3>
                     <ul>
                         <li><a href="/pricing">Pricing</a></li>
-                        <li><a href="mailto:hello@eniayomi.com">Contact</a></li>
+                        <li><a href="mailto:hello@compecho.com">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-links-column">
