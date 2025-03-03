@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (hamburger) {
         hamburger.addEventListener('click', function() {
+            this.classList.toggle('active');
             navLinks.classList.toggle('active');
-            hamburger.classList.toggle('active');
         });
     }
 
@@ -48,168 +48,253 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 
-    // Smooth scrolling for anchor links
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
             // Close mobile menu if open
-            if (navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
+            if (hamburger && hamburger.classList.contains('active')) {
                 hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
             }
             
             const targetId = this.getAttribute('href');
             const targetElement = document.querySelector(targetId);
             
             if (targetElement) {
+                const headerOffset = 80;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80, // Offset for header
+                    top: offsetPosition,
                     behavior: 'smooth'
                 });
             }
         });
     });
 
-    // Waitlist form submission
+    // Waitlist form
     const waitlistForm = document.getElementById('waitlist-form');
     const formSuccess = document.getElementById('form-success');
+    const formError = document.getElementById('form-error');
     
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Get form data
-            const formData = new FormData(waitlistForm);
-            const formDataObj = {};
+            // Validate form
+            if (!validateForm(this)) {
+                // Shake invalid inputs
+                document.querySelectorAll('.invalid').forEach(input => {
+                    input.classList.add('shake');
+                    setTimeout(() => {
+                        input.classList.remove('shake');
+                    }, 500);
+                });
+                
+                // Scroll to first invalid input
+                const firstInvalid = document.querySelector('.invalid');
+                if (firstInvalid) {
+                    const headerOffset = 100;
+                    const elementPosition = firstInvalid.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                return;
+            }
+            
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
             
             formData.forEach((value, key) => {
-                // Handle checkboxes (multiple values)
                 if (key === 'frameworks') {
-                    if (!formDataObj[key]) {
-                        formDataObj[key] = [];
+                    if (!data[key]) {
+                        data[key] = [];
                     }
-                    formDataObj[key].push(value);
+                    data[key].push(value);
                 } else {
-                    formDataObj[key] = value;
+                    data[key] = value;
                 }
             });
             
-            // Show loading state
-            const submitButton = waitlistForm.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.textContent;
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            
-            // Send data to server
-            fetch('/api/waitlist', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formDataObj),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    waitlistForm.style.display = 'none';
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                try {
+                    // Simulate successful submission
+                    console.log('Form data:', data);
+                    
+                    // Hide form and show success message
+                    waitlistForm.classList.add('hidden');
                     formSuccess.classList.remove('hidden');
                     
-                    // Log success
-                    console.log('Waitlist submission successful:', data);
-                } else {
-                    // Show error message
-                    submitButton.disabled = false;
+                    // Scroll to success message
+                    const headerOffset = 100;
+                    const elementPosition = formSuccess.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    formError.classList.remove('hidden');
+                    
+                    // Reset button
                     submitButton.textContent = originalButtonText;
-                    
-                    // Create or update error message
-                    let errorMessage = waitlistForm.querySelector('.form-error');
-                    if (!errorMessage) {
-                        errorMessage = document.createElement('div');
-                        errorMessage.className = 'form-error';
-                        errorMessage.style.backgroundColor = '#fee2e2';
-                        errorMessage.style.color = '#b91c1c';
-                        errorMessage.style.padding = '0.75rem';
-                        errorMessage.style.borderRadius = '0.375rem';
-                        errorMessage.style.marginBottom = '1rem';
-                        waitlistForm.prepend(errorMessage);
-                    }
-                    
-                    errorMessage.textContent = data.message || 'An error occurred. Please try again.';
-                    
-                    // Log error
-                    console.error('Waitlist submission error:', data);
+                    submitButton.disabled = false;
                 }
-            })
-            .catch(error => {
-                // Reset button
-                submitButton.disabled = false;
-                submitButton.textContent = originalButtonText;
-                
-                // Create or update error message
-                let errorMessage = waitlistForm.querySelector('.form-error');
-                if (!errorMessage) {
-                    errorMessage = document.createElement('div');
-                    errorMessage.className = 'form-error';
-                    errorMessage.style.backgroundColor = '#fee2e2';
-                    errorMessage.style.color = '#b91c1c';
-                    errorMessage.style.padding = '0.75rem';
-                    errorMessage.style.borderRadius = '0.375rem';
-                    errorMessage.style.marginBottom = '1rem';
-                    waitlistForm.prepend(errorMessage);
-                }
-                
-                errorMessage.textContent = 'Network error. Please try again later.';
-                
-                // Log error
-                console.error('Waitlist submission network error:', error);
+            }, 1500);
+        });
+        
+        // Input validation on blur
+        waitlistForm.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', function() {
+                validateInput(this);
+            });
+            
+            input.addEventListener('focus', function() {
+                this.classList.remove('invalid');
             });
         });
     }
-
-    // Add animation for feature cards
+    
+    function validateForm(form) {
+        let isValid = true;
+        
+        // Validate required inputs
+        form.querySelectorAll('input[required], select[required]').forEach(input => {
+            if (!validateInput(input)) {
+                isValid = false;
+            }
+        });
+        
+        // Validate checkbox group (at least one must be selected)
+        const checkboxes = form.querySelectorAll('input[name="frameworks"]');
+        if (checkboxes.length > 0) {
+            const checked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            
+            if (!checked) {
+                isValid = false;
+                const checkboxGroup = form.querySelector('.checkbox-group');
+                if (checkboxGroup) {
+                    checkboxGroup.classList.add('invalid');
+                }
+            } else {
+                const checkboxGroup = form.querySelector('.checkbox-group');
+                if (checkboxGroup) {
+                    checkboxGroup.classList.remove('invalid');
+                }
+            }
+        }
+        
+        return isValid;
+    }
+    
+    function validateInput(input) {
+        if (input.required && !input.value.trim()) {
+            input.classList.add('invalid');
+            return false;
+        } else if (input.type === 'email' && input.value.trim()) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(input.value.trim())) {
+                input.classList.add('invalid');
+                return false;
+            }
+        }
+        
+        input.classList.remove('invalid');
+        return true;
+    }
+    
+    // Feature card animations
     const featureCards = document.querySelectorAll('.feature-card');
     
     if (featureCards.length > 0) {
-        // Add animation delay to stagger the animations
-        featureCards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            card.style.transitionDelay = `${index * 0.1}s`;
-        });
-        
-        // Function to check if element is in viewport
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.bottom >= 0
-            );
-        }
-        
-        // Function to handle scroll animation
-        function handleScroll() {
-            featureCards.forEach(card => {
-                if (isInViewport(card)) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }
-            });
-        }
-        
         // Initial check
         handleScroll();
         
-        // Add scroll event listener
+        // Check on scroll
         window.addEventListener('scroll', handleScroll);
     }
-
-    // Update copyright year
-    const copyrightYear = document.querySelector('.footer-bottom p');
-    if (copyrightYear) {
-        const currentYear = new Date().getFullYear();
-        copyrightYear.textContent = copyrightYear.textContent.replace('2025', currentYear);
+    
+    function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+            rect.bottom >= 0
+        );
     }
-}); 
+    
+    function handleScroll() {
+        featureCards.forEach(card => {
+            if (isInViewport(card)) {
+                card.classList.add('visible');
+            }
+        });
+    }
+    
+    // Update copyright year
+    const currentYear = new Date().getFullYear();
+    const copyrightYear = document.querySelector('.footer-bottom p');
+    
+    if (copyrightYear) {
+        copyrightYear.textContent = copyrightYear.textContent.replace(/\d{4}/, currentYear);
+    }
+});
+
+// Add CSS for animations and validation
+const style = document.createElement('style');
+style.textContent = `
+    .shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    @keyframes shake {
+        10%, 90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+        20%, 80% {
+            transform: translate3d(2px, 0, 0);
+        }
+        30%, 50%, 70% {
+            transform: translate3d(-3px, 0, 0);
+        }
+        40%, 60% {
+            transform: translate3d(3px, 0, 0);
+        }
+    }
+    
+    .form-group input.invalid,
+    .form-group select.invalid,
+    .checkbox-group.invalid {
+        border-color: var(--error-color);
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
+    
+    .feature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .feature-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+document.head.appendChild(style); 

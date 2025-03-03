@@ -533,6 +533,20 @@
                 max-width: 600px;
                 margin: 0 auto;
             }
+            
+            .waitlist .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .waitlist-content {
+                max-width: 100%;
+            }
+            
+            .waitlist-image {
+                max-width: 600px;
+                margin: 0 auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -556,6 +570,84 @@
 
             .hamburger {
                 display: block;
+            }
+            
+            .waitlist-image {
+                transform: none;
+                max-width: 100%;
+            }
+            
+            .waitlist-image:hover {
+                transform: none;
+            }
+            
+            .benefits-card {
+                padding: 1.5rem;
+                order: 2 !important;
+            }
+            
+            .waitlist-content {
+                order: 1 !important;
+            }
+            
+            .waitlist .container {
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            
+            .benefits-card h3 {
+                font-size: 1.5rem;
+            }
+            
+            .benefit-content h4 {
+                font-size: 1rem;
+            }
+            
+            .benefit-content p {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .waitlist-content h2 {
+                font-size: 2rem;
+            }
+            
+            .waitlist-content p {
+                font-size: 1rem;
+            }
+            
+            .benefits-card {
+                padding: 1.25rem;
+            }
+            
+            .benefits-card h3 {
+                font-size: 1.25rem;
+            }
+            
+            .benefit-icon {
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            .benefits-card {
+                padding: 1rem;
+            }
+            
+            .benefits-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .benefits-list li {
+                margin-bottom: 0.75rem;
+            }
+            
+            .benefit-icon {
+                width: 1.75rem;
+                height: 1.75rem;
             }
         }
 
@@ -670,6 +762,7 @@
         .benefits-card {
             padding: 2.5rem;
             height: 100%;
+            box-sizing: border-box;
         }
 
         .benefits-card h3 {
@@ -904,19 +997,19 @@
                 <form id="waitlist-form" class="waitlist-form">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required autocomplete="name" inputmode="text" autocapitalize="words">
                     </div>
                     <div class="form-group">
                         <label for="email">Work Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your work email" required>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your work email" required autocomplete="email" inputmode="email" autocapitalize="off">
                     </div>
                     <div class="form-group">
                         <label for="company">Company</label>
-                        <input type="text" id="company" name="company" placeholder="Enter your company name" required>
+                        <input type="text" id="company" name="company" class="form-control" placeholder="Enter your company name" required autocomplete="organization">
                     </div>
                     <div class="form-group">
                         <label for="role">Role</label>
-                        <select id="role" name="role" required>
+                        <select id="role" name="role" class="form-control" required>
                             <option value="" disabled selected>Select your role</option>
                             <option value="compliance-manager">Compliance Manager</option>
                             <option value="security-officer">Security Officer</option>
@@ -931,12 +1024,30 @@
                     <div class="form-group">
                         <label for="frameworks">Compliance Frameworks (Select all that apply)</label>
                         <div class="checkbox-group">
-                            <label><input type="checkbox" name="frameworks" value="pci-dss"> PCI DSS</label>
-                            <label><input type="checkbox" name="frameworks" value="soc2"> SOC 2</label>
-                            <label><input type="checkbox" name="frameworks" value="iso27001"> ISO 27001</label>
-                            <label><input type="checkbox" name="frameworks" value="hipaa"> HIPAA</label>
-                            <label><input type="checkbox" name="frameworks" value="gdpr"> GDPR</label>
-                            <label><input type="checkbox" name="frameworks" value="other"> Other</label>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="pci-dss" name="frameworks" value="pci-dss">
+                                <label for="pci-dss">PCI DSS</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="soc2" name="frameworks" value="soc2">
+                                <label for="soc2">SOC 2</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="iso27001" name="frameworks" value="iso27001">
+                                <label for="iso27001">ISO 27001</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="hipaa" name="frameworks" value="hipaa">
+                                <label for="hipaa">HIPAA</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="gdpr" name="frameworks" value="gdpr">
+                                <label for="gdpr">GDPR</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="other-framework" name="frameworks" value="other">
+                                <label for="other-framework">Other</label>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">Join Waitlist</button>
@@ -945,41 +1056,61 @@
                     <h3>Thank you for joining our waitlist!</h3>
                     <p>We'll notify you when CompEcho is ready for early access.</p>
                 </div>
-            </div>
-            <div class="waitlist-image">
-                <div class="benefits-card">
-                    <h3>Early Access Benefits</h3>
-                    <ul class="benefits-list">
-                        <li>
-                            <div class="benefit-icon"><i class="fas fa-percentage"></i></div>
-                            <div class="benefit-content">
-                                <h4>Exclusive Pricing</h4>
-                                <p>Get 30% off your first three months when you join our waitlist</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="benefit-icon"><i class="fas fa-user-shield"></i></div>
-                            <div class="benefit-content">
-                                <h4>Priority Onboarding</h4>
-                                <p>Dedicated support team to help you get started quickly</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="benefit-icon"><i class="fas fa-cogs"></i></div>
-                            <div class="benefit-content">
-                                <h4>Feature Input</h4>
-                                <p>Help shape the product roadmap with your feedback</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="benefit-icon"><i class="fas fa-graduation-cap"></i></div>
-                            <div class="benefit-content">
-                                <h4>Free Training</h4>
-                                <p>Complimentary training sessions for your team</p>
-                            </div>
-                        </li>
-                    </ul>
+                <div id="form-error" class="form-error hidden">
+                    <p>There was an error submitting your form. Please try again.</p>
                 </div>
+            </div>
+            
+            <div class="benefits-card mobile-benefits">
+                <h3>Early Access Benefits</h3>
+                <ul class="benefits-list">
+                    <li>
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Exclusive Pricing</h4>
+                            <p>Get 30% off your first three months when you join our waitlist</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Priority Onboarding</h4>
+                            <p>Dedicated support team to help you get started quickly</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Feature Input</h4>
+                            <p>Help shape the product roadmap with your feedback</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Free Training</h4>
+                            <p>Complimentary training sessions for your team</p>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
