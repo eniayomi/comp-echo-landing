@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - CompEcho</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <style>
+        .pricing-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        
+        .pricing-header h1 {
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-header p {
+            color: var(--text-light);
+            font-size: 1.25rem;
+        }
+        
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+            margin: 0 1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .pricing-card {
+            background-color: var(--background-alt);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .pricing-card.popular {
+            border: 2px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-bottom-left-radius: 0.5rem;
+        }
+        
+        .pricing-header-card {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .pricing-price .currency {
+            font-size: 1.5rem;
+            vertical-align: super;
+        }
+        
+        .pricing-period {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .pricing-features {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+        
+        .pricing-features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .pricing-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing-features li i {
+            color: var(--primary-color);
+            margin-right: 0.75rem;
+        }
+        
+        .pricing-features li.disabled {
+            color: var(--text-light);
+        }
+        
+        .pricing-features li.disabled i {
+            color: #ccc;
+        }
+        
+        .pricing-addon {
+            background-color: rgba(37, 99, 235, 0.05);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            border: 1px dashed rgba(37, 99, 235, 0.3);
+        }
+        
+        .pricing-addon-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .pricing-addon-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.25rem 0;
+        }
+        
+        .pricing-addon-item i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .pricing-cta {
+            padding: 0 2rem 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .pricing-cta .btn {
+            width: 100%;
+        }
+        
+        .enterprise-cta {
+            background-color: var(--background-alt);
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .enterprise-cta h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .enterprise-cta p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: help;
+        }
+        
+        .tooltip-icon {
+            margin-left: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.75rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: normal;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-header p {
+                font-size: 1rem;
+            }
+            
+            .enterprise-cta {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <h1><a href="/"><img src="images/logo.svg" alt="CompEcho Logo" width="30" height="30" class="logo-svg" style="margin-right: 8px; vertical-align: middle;">CompEcho</a></h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/#features">Features</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/pricing" class="active">Pricing</a></li>
+                    <li><a href="mailto:hello@eniayomi.com">Contact</a></li>
+                    <li><a href="/#waitlist" class="btn btn-primary" style="color: white;">Join Waitlist</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="pricing-section">
+            <div class="container">
+                <div class="pricing-header">
+                    <h1>Simple, Transparent Pricing</h1>
+                    <p>Choose the plan that's right for your organization. All plans include core compliance automation features.</p>
+                </div>
+                
+                <div class="pricing-toggle">
+                    <span class="toggle-label">Monthly</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="billing-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Annual <span class="save-badge" style="background-color: #ecfdf5; color: #065f46; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.5rem;">Save 20%</span></span>
+                </div>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-header-card">
+                            <div class="pricing-name">Growth</div>
+                            <div class="pricing-description">For small teams getting started with compliance</div>
+                            <div class="pricing-price monthly"><span class="currency">$</span>99</div>
+                            <div class="pricing-price annual hidden"><span class="currency">$</span>79</div>
+                            <div class="pricing-period">per month</div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> Up to 5 users</li>
+                                <li><i class="fas fa-check"></i> 2 compliance frameworks</li>
+                                <li><i class="fas fa-check"></i> Up to 5 integrations</li>
+                                <li><i class="fas fa-check"></i> Evidence collection</li>
+                                <li><i class="fas fa-check"></i> Basic reporting</li>
+                                <li><i class="fas fa-check"></i> Email support</li>
+                            </ul>
+                            
+                            <div class="pricing-addon">
+                                <div class="pricing-addon-title">Add-ons</div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional user
+                                </div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional framework
+                                </div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional integration
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="/#waitlist" class="btn btn-outline">Join Waitlist</a>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="pricing-header-card">
+                            <div class="pricing-name">Scale</div>
+                            <div class="pricing-description">For growing organizations with multiple frameworks</div>
+                            <div class="pricing-price monthly"><span class="currency">$</span>399</div>
+                            <div class="pricing-price annual hidden"><span class="currency">$</span>319</div>
+                            <div class="pricing-period">per month</div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> Everything in Growth, plus:</li>
+                                <li><i class="fas fa-check"></i> Up to 20 users</li>
+                                <li><i class="fas fa-check"></i> 5 compliance frameworks</li>
+                                <li><i class="fas fa-check"></i> Up to 20 integrations</li>
+                                <li><i class="fas fa-check"></i> Advanced evidence collection</li>
+                                <li><i class="fas fa-check"></i> Custom reporting</li>
+                                <li><i class="fas fa-check"></i> Priority email & chat support</li>
+                                <li><i class="fas fa-check"></i> Custom controls <span class="tooltip"><i class="fas fa-info-circle tooltip-icon"></i><span class="tooltip-text">Create and manage organization-specific compliance controls tailored to your unique requirements.</span></span></li>
+                                <li><i class="fas fa-check"></i> API access</li>
+                                <li><i class="fas fa-check"></i> SSO Integration</li>
+                            </ul>
+                            
+                            <div class="pricing-addon">
+                                <div class="pricing-addon-title">Add-ons</div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional user
+                                </div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional framework
+                                </div>
+                                <div class="pricing-addon-item">
+                                    <i class="fas fa-plus-circle"></i> $5 per additional integration
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="/#waitlist" class="btn btn-primary">Join Waitlist</a>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card">
+                        <div class="pricing-header-card">
+                            <div class="pricing-name">Enterprise</div>
+                            <div class="pricing-description">For larger organizations with complex compliance needs</div>
+                            <div class="pricing-price monthly">Custom</div>
+                            <div class="pricing-price annual hidden">Custom</div>
+                            <div class="pricing-period">contact for pricing</div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> Everything in Scale, plus:</li>
+                                <li><i class="fas fa-check"></i> Unlimited users</li>
+                                <li><i class="fas fa-check"></i> Unlimited frameworks</li>
+                                <li><i class="fas fa-check"></i> Unlimited integrations</li>
+                                <li><i class="fas fa-check"></i> 24/7 priority support</li>
+                                <li><i class="fas fa-check"></i> Dedicated account manager</li>
+                                <li><i class="fas fa-check"></i> Custom implementation</li>
+                                <li><i class="fas fa-check"></i> Advanced security features</li>
+                                <li><i class="fas fa-check"></i> Compliance advisory services</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="mailto:hello@eniayomi.com?subject=Enterprise%20Plan%20Inquiry" class="btn btn-outline">Contact Sales</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="enterprise-cta">
+                    <h2>Need a custom solution?</h2>
+                    <p>We offer tailored enterprise plans for organizations with specific compliance requirements, multiple subsidiaries, or custom integrations.</p>
+                    <a href="mailto:hello@eniayomi.com?subject=Enterprise%20Plan%20Inquiry" class="btn btn-primary">Contact Sales</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>CompEcho</h2>
+                    <p>Modern Compliance Automation Platform</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h3>Product</h3>
+                        <ul>
+                            <li><a href="/#features">Features</a></li>
+                            <li><a href="/#how-it-works">How It Works</a></li>
+                            <li><a href="/#waitlist">Waitlist</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Company</h3>
+                        <ul>
+                            <li><a href="/pricing">Pricing</a></li>
+                            <li><a href="mailto:hello@eniayomi.com">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Legal</h3>
+                        <ul>
+                            <li><a href="/privacy-policy">Privacy Policy</a></li>
+                            <li><a href="/terms-of-service">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CompEcho. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const billingToggle = document.getElementById('billing-toggle');
+            const monthlyPrices = document.querySelectorAll('.pricing-price.monthly');
+            const annualPrices = document.querySelectorAll('.pricing-price.annual');
+            
+            billingToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    // Annual pricing
+                    monthlyPrices.forEach(price => price.classList.add('hidden'));
+                    annualPrices.forEach(price => price.classList.remove('hidden'));
+                } else {
+                    // Monthly pricing
+                    monthlyPrices.forEach(price => price.classList.remove('hidden'));
+                    annualPrices.forEach(price => price.classList.add('hidden'));
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

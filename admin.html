@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompEcho Admin - Waitlist Entries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <style>
+        .admin-header {
+            background-color: #1f2937;
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        .admin-title {
+            margin: 0;
+        }
+        
+        .admin-content {
+            padding: 2rem 0;
+        }
+        
+        .waitlist-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .waitlist-table th,
+        .waitlist-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .waitlist-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        
+        .waitlist-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .badge-blue {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-amber {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-red {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .badge-purple {
+            background-color: #ede9fe;
+            color: #5b21b6;
+        }
+        
+        .badge-gray {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        
+        .export-btn {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <h1 class="admin-title">CompEcho Admin - Waitlist Entries</h1>
+        </div>
+    </header>
+
+    <main class="admin-content">
+        <div class="container">
+            <div class="admin-actions">
+                <button id="export-csv" class="btn btn-secondary export-btn">Export to CSV</button>
+                <button id="refresh-data" class="btn btn-outline export-btn">Refresh Data</button>
+            </div>
+            
+            <div id="error-message" class="error hidden"></div>
+            
+            <div id="loading" class="loading">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto"></div>
+                <p class="mt-4 text-gray-600">Loading waitlist entries...</p>
+            </div>
+            
+            <div id="waitlist-container" class="hidden">
+                <h2>Waitlist Entries (<span id="entry-count">0</span>)</h2>
+                <table class="waitlist-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Company</th>
+                            <th>Role</th>
+                            <th>Frameworks</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waitlist-entries">
+                        <!-- Entries will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const waitlistContainer = document.getElementById('waitlist-container');
+            const waitlistEntries = document.getElementById('waitlist-entries');
+            const entryCount = document.getElementById('entry-count');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const exportCsvBtn = document.getElementById('export-csv');
+            const refreshDataBtn = document.getElementById('refresh-data');
+            
+            // Framework badge colors
+            const frameworkColors = {
+                'pci-dss': 'badge-blue',
+                'soc2': 'badge-green',
+                'iso27001': 'badge-amber',
+                'hipaa': 'badge-red',
+                'gdpr': 'badge-purple',
+                'other': 'badge-gray'
+            };
+            
+            // Format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleString();
+            }
+            
+            // Fetch waitlist entries
+            function fetchWaitlistEntries() {
+                // Show loading
+                loading.classList.remove('hidden');
+                waitlistContainer.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                
+                fetch('/api/waitlist')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update entry count
+                            entryCount.textContent = data.data.length;
+                            
+                            // Clear existing entries
+                            waitlistEntries.innerHTML = '';
+                            
+                            // Add entries to table
+                            data.data.forEach(entry => {
+                                const row = document.createElement('tr');
+                                
+                                // Create framework badges
+                                const frameworkBadges = entry.frameworks.map(framework => {
+                                    const badgeClass = frameworkColors[framework] || 'badge-gray';
+                                    return `<span class="badge ${badgeClass}">${framework}</span>`;
+                                }).join('');
+                                
+                                row.innerHTML = `
+                                    <td>${entry.name}</td>
+                                    <td>${entry.email}</td>
+                                    <td>${entry.company}</td>
+                                    <td>${entry.role}</td>
+                                    <td>${frameworkBadges || '-'}</td>
+                                    <td>${formatDate(entry.created_at)}</td>
+                                `;
+                                
+                                waitlistEntries.appendChild(row);
+                            });
+                            
+                            // Hide loading, show table
+                            loading.classList.add('hidden');
+                            waitlistContainer.classList.remove('hidden');
+                        } else {
+                            // Show error
+                            errorMessage.textContent = data.message || 'An error occurred while fetching waitlist entries.';
+                            errorMessage.classList.remove('hidden');
+                            loading.classList.add('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching waitlist entries:', error);
+                        errorMessage.textContent = 'Network error. Please try again later.';
+                        errorMessage.classList.remove('hidden');
+                        loading.classList.add('hidden');
+                    });
+            }
+            
+            // Export to CSV
+            function exportToCsv() {
+                fetch('/api/waitlist')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data.length > 0) {
+                            // Create CSV content
+                            const headers = ['Name', 'Email', 'Company', 'Role', 'Frameworks', 'Date'];
+                            const rows = data.data.map(entry => [
+                                entry.name,
+                                entry.email,
+                                entry.company,
+                                entry.role,
+                                entry.frameworks.join(', '),
+                                formatDate(entry.created_at)
+                            ]);
+                            
+                            const csvContent = [
+                                headers.join(','),
+                                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+                            ].join('\n');
+                            
+                            // Create download link
+                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.setAttribute('href', url);
+                            link.setAttribute('download', `compecho-waitlist-${new Date().toISOString().split('T')[0]}.csv`);
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        } else {
+                            alert('No waitlist entries to export.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error exporting waitlist entries:', error);
+                        alert('Error exporting waitlist entries. Please try again later.');
+                    });
+            }
+            
+            // Event listeners
+            exportCsvBtn.addEventListener('click', exportToCsv);
+            refreshDataBtn.addEventListener('click', fetchWaitlistEntries);
+            
+            // Initial fetch
+            fetchWaitlistEntries();
+        });
+    </script>
+</body>
+</html> 

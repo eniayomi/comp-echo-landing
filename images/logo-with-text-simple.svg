@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100">
+  <!-- Logo Icon -->
+  <g transform="translate(10, 0)">
+    <rect width="100" height="100" rx="20" fill="#2563eb"/>
+    <path d="M30 40 L50 25 L70 40 L70 65 L50 80 L30 65 Z" fill="white" stroke="#1d4ed8" stroke-width="2"/>
+    <path d="M40 45 L50 38 L60 45 L60 60 L50 68 L40 60 Z" fill="#2563eb" stroke="white" stroke-width="1"/>
+  </g>
+  
+  <!-- CompEcho Text -->
+  <text x="120" y="60" font-family="Arial, sans-serif" font-weight="bold" font-size="40" fill="#2563eb">CompEcho</text>
+</svg> 
